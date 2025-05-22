@@ -1,0 +1,21 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VS Code settings (if you're using it)
+.vscode/
+
+# Environment files
+.env
+*.env
+
+# MacOS junk
+.DS_Store
+
+# Log/output files
+*.log
+
+# Virtual environment folders
+venv/
+env/
