@@ -39,7 +39,7 @@ status_label = tk.Label(root, text="Door Status: CLOSED",
                         font=("Arial", 18), fg="green")
 status_label.pack(pady=10)
 
-percent_label = tk.Label(root, text="Open 0%", font=("Arial", 14))
+percent_label = tk.Label(root, text="Open: 0%", font=("Arial", 14))
 percent_label.pack(pady=5)
 
 log = tk.Text(root, height=10, width=50)
@@ -56,7 +56,7 @@ def monitor_loop():
     percent = get_door_percentage(USE_SIMULATION)
     now = datetime.now()
 
-    percent_label.config(text=f"Open {percent}%")
+    percent_label.config(text=f"Open: {percent}%")
     if percent > OPEN_THRESHOLD:
         status_label.config(text="Door Status: OPEN", fg="red")
         if door_open_since is None:
