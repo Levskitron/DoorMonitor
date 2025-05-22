@@ -2,7 +2,7 @@
 
 # — Simulation vs. real sensor —
 USE_SIMULATION = True       # True = use simulated data
-+SENSOR_TYPE    = "reed"     # "reed", "adc", "ultrasonic", or "420" (ignored if USE_SIMULATION=True)
+SENSOR_TYPE    = "reed"     # "reed", "adc", "ultrasonic", or "420" (ignored if USE_SIMULATION=True)
 
 # — Door logic —
 OPEN_THRESHOLD   = 1                                  # % open to count as “open”
