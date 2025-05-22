@@ -10,9 +10,6 @@ __pycache__/
 .env
 *.env
 
-# Ignore credentials or config (if you rename your real one)
-config.py
-
 # MacOS junk
 .DS_Store
 
