@@ -6,7 +6,7 @@ from config import SENSOR_TYPE, ADC_CHANNEL, RESISTOR_OHMS, V_REF, MIN_CURRENT_M
 
 # === Simulated sensor for development ===
 def simulated_door_percentage():
-    return random.choice([0, 1, 0, 15, 30, 60, 0, 0, 100, 5])
+    return random.choice([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100])
 
 # === Reed switch (digital GPIO) ===
 def read_reed_switch():
