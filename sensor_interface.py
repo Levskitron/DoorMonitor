@@ -2,15 +2,13 @@
 
 import random
 import time
-from config import SENSOR_TYPE
-from config import ADC_CHANNEL, RESISTOR_OHMS, V_REF, MIN_CURRENT_MA, MAX_CURRENT_MA
-import spidev
+from config import SENSOR_TYPE, ADC_CHANNEL, RESISTOR_OHMS, V_REF, MIN_CURRENT_MA, MAX_CURRENT_MA
 
-# — Simulated sensor for development —
+# === Simulated sensor for development ===
 def simulated_door_percentage():
     return random.choice([0, 1, 0, 15, 30, 60, 0, 0, 100, 5])
 
-# — Reed switch (digital GPIO) —
+# === Reed switch (digital GPIO) ===
 def read_reed_switch():
     import RPi.GPIO as GPIO
     REED_PIN = 17
@@ -18,7 +16,7 @@ def read_reed_switch():
     GPIO.setup(REED_PIN, GPIO.IN)
     return 100 if GPIO.input(REED_PIN) else 0
 
-# — Ultrasonic (distance → “% open”) —
+# === Ultrasonic (distance → % open) ===
 def read_ultrasonic():
     import RPi.GPIO as GPIO
     TRIG = 23
@@ -27,10 +25,12 @@ def read_ultrasonic():
     GPIO.setup(TRIG, GPIO.OUT)
     GPIO.setup(ECHO, GPIO.IN)
 
+    # send pulse
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
+    # measure echo
     while GPIO.input(ECHO) == 0:
         start = time.time()
     while GPIO.input(ECHO) == 1:
@@ -43,19 +43,22 @@ def read_ultrasonic():
         return 0
     return int(100 - ((distance - 5) / 25) * 100)
 
-# — Potentiometer via MCP3008 ADC —
+# === Potentiometer via MCP3008 ADC ===
 def read_adc_sensor():
     import spidev
     spi = spidev.SpiDev()
     spi.open(0, 0)
     spi.max_speed_hz = 1350000
-    # read channel 0
-    r = spi.xfer2([1, (8 + 0) << 4, 0])
-    value = ((r[1] & 3) << 8) + r[2]
-    return int((value / 1023) * 100)
+    # read configured channel
+    cmd = [1, (8 + ADC_CHANNEL) << 4, 0]
+    r = spi.xfer2(cmd)
+    raw = ((r[1] & 3) << 8) + r[2]
+    # map raw to 0-100%
+    return int((raw / 1023) * 100)
 
-# — 4–20 mA sensor via 250Ω → 1–5 V on MCP3008 channel 0 —
+# === 4–20 mA sensor via resistor → voltage on MCP3008 ===
 def read_420_sensor():
+    import spidev
     spi = spidev.SpiDev()
     spi.open(0, 0)
     spi.max_speed_hz = 1350000
@@ -80,7 +83,7 @@ def read_420_sensor():
 
     return int(percent)
 
-# — Dispatcher: picks the right source —
+# === Dispatcher: picks the right source ===
 def get_door_percentage(simulation=True):
     if simulation:
         return simulated_door_percentage()
@@ -92,4 +95,5 @@ def get_door_percentage(simulation=True):
         return read_adc_sensor()
     if SENSOR_TYPE == "420":
         return read_420_sensor()
-    raise ValueError(f"Unknown SENSOR_TYPE: {SENSOR_TYPE}")
+    # fallback
+    return simulated_door_percentage()  # unknown type → simulate
