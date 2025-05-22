@@ -25,25 +25,21 @@ def read_ultrasonic():
     GPIO.setup(TRIG, GPIO.OUT)
     GPIO.setup(ECHO, GPIO.IN)
 
-    # send pulse
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    # measure echo
     while GPIO.input(ECHO) == 0:
         start = time.time()
     while GPIO.input(ECHO) == 1:
         end = time.time()
-    duration = end - start
-    distance_cm = duration * 17150
 
-    # map 5–30 cm to 100–0 %
-    if distance_cm < 5:
+    distance = (end - start) * 17150  # cm
+    if distance < 5:
         return 100
-    if distance_cm > 30:
+    if distance > 30:
         return 0
-    return int(100 - ((distance_cm - 5) / 25) * 100)
+    return int(100 - ((distance - 5) / 25) * 100)
 
 # — Potentiometer via MCP3008 ADC —
 def read_adc_sensor():
@@ -56,6 +52,23 @@ def read_adc_sensor():
     value = ((r[1] & 3) << 8) + r[2]
     return int((value / 1023) * 100)
 
+# — 4–20 mA sensor via 250Ω → 1–5 V on MCP3008 channel 0 —
+def read_420_sensor():
+    import spidev
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+    spi.max_speed_hz = 1350000
+    # read channel 0
+    r = spi.xfer2([1, (8 + 0) << 4, 0])
+    raw = ((r[1] & 3) << 8) + r[2]
+    # MCP3008 gives 0–1023 for 0–3.3 V, but if you scale
+    # 4–20 mA through 250 Ω → 1–5 V, clamp & map 1 V–5 V
+    # On a 3.3 V ADC you’ll actually max at ~3.3 V (≈100%), so:
+    min_adc = int((1.0 / 3.3) * 1023)
+    max_adc = 1023
+    val = max(min_adc, min(raw, max_adc))
+    return int(((val - min_adc) / (max_adc - min_adc)) * 100)
+
 # — Dispatcher: picks the right source —
 def get_door_percentage(simulation=True):
     if simulation:
@@ -66,4 +79,6 @@ def get_door_percentage(simulation=True):
         return read_ultrasonic()
     if SENSOR_TYPE == "adc":
         return read_adc_sensor()
+    if SENSOR_TYPE == "420":
+        return read_420_sensor()
     raise ValueError(f"Unknown SENSOR_TYPE: {SENSOR_TYPE}")
