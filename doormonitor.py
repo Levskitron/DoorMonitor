@@ -56,30 +56,31 @@ email_sent = False
 # MONITOR LOOP
 def monitor_loop():
     global door_open_since, email_sent
-    
+
     percent_open = get_door_percentage()
     now = datetime.now()
-    
+
     percent_label.config(text=f"Open {percent_open}%")
-    
-    if percent_open > OPEN_THRESHOLD:
+
+    if percent_open > 1:
         status_label.config(text="Door Status: OPEN", fg="red")
         if door_open_since is None:
             door_open_since = now
             log.insert(tk.END, f"[{now:%H:%M:%S}] Door opened. \n")
-        elif now - door_open_since > ALERT_DELAY:
+        elif now - door_open_since > timedelta(minutes=5):
             if not email_sent:
                 send_email()
                 log.insert(tk.END, f"[{now:%H:%M:%S}] Door open too long! Email sent. \n")
                 email_sent = True
-                
     else:
         if door_open_since is not None:
-            log.insert(tk.END, f"[{now%H:%M:%S}] Door closed. \n")
+            log.insert(tk.END, f"[{now:%H:%M:%S}] Door closed. \n")
         door_open_since = None
         email_sent = False
         status_label.config(text="Door Status: CLOSED", fg="green")
-        log.see(tk.END)
+
+    log.see(tk.END)
+    root.after(5000, monitor_loop)
     
 # START LOOP
 root.after (1000, monitor_loop)
