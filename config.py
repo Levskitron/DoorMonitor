@@ -10,9 +10,9 @@ ALERT_DELAY_MIN  = 5                                  # minutes until alert
 CHECK_INTERVAL_MS = 5000                              # how often to poll (ms)
 
 # — Email settings —
-EMAIL_ADDRESS  = "email@example.com"
+EMAIL_ADDRESS  = "your_email_address"
 EMAIL_PASSWORD = "your_app_password"                  # use a Gmail App Password
-EMAIL_TO       = "recipient_email@example.com"
+EMAIL_TO       = "recipient_email_address"
 SMTP_SERVER    = "smtp.gmail.com"
 SMTP_PORT      = 465
 
