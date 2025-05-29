@@ -1,0 +1,129 @@
+[
+    {
+        "id": "inject-sim",
+        "type": "inject",
+        "z": "flow1",
+        "name": "Simulate voltage (1-5V)",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "3",
+        "payloadType": "num",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "func-convert"
+            ]
+        ]
+    },
+    {
+        "id": "func-convert",
+        "type": "function",
+        "z": "flow1",
+        "name": "Convert voltage to current and % open",
+        "func": "// Constants\nconst resistor = 250; // Ohms\nconst voltage = parseFloat(msg.payload);\n\n// Validate voltage range (sensor voltage should be 1-5V for 4-20mA)\nif (isNaN(voltage) || voltage < 0) {\n    return null;\n}\n\n// Convert voltage to current in mA\n// I = V / R\nlet current_mA = (voltage / resistor) * 1000;\n// Clamp current between 4 and 20mA\ncurrent_mA = Math.min(Math.max(current_mA, 4), 20);\n\n// Calculate door open percentage\nlet percentOpen = ((current_mA - 4) / 16) * 100;\npercentOpen = Math.round(percentOpen * 10) / 10; // round to 1 decimal\n\n// Determine door status with 10% threshold\nlet doorStatus = (percentOpen > 10) ? \"OPEN\" : \"CLOSED\";\n\nmsg.current_mA = current_mA;\nmsg.percentOpen = percentOpen;\nmsg.doorStatus = doorStatus;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 80,
+        "wires": [
+            [
+                "debug-node",
+                "ui-text-status",
+                "ui-gauge-open"
+            ]
+        ]
+    },
+    {
+        "id": "debug-node",
+        "type": "debug",
+        "z": "flow1",
+        "name": "Debug output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 630,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "ui-text-status",
+        "type": "ui_text",
+        "z": "flow1",
+        "group": "ui-group",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "Door Status Text",
+        "label": "Door Status",
+        "format": "{{msg.doorStatus}} ({{msg.percentOpen}}%)",
+        "layout": "row-spread",
+        "x": 630,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "ui-gauge-open",
+        "type": "ui_gauge",
+        "z": "flow1",
+        "name": "Door Open % Gauge",
+        "group": "ui-group",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Door Open %",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ff0000",
+            "#ffff00",
+            "#00ff00"
+        ],
+        "seg1": 10,
+        "seg2": 80,
+        "x": 630,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "ui-group",
+        "type": "ui_group",
+        "name": "Door Sensor",
+        "tab": "ui-tab",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui-tab",
+        "type": "ui_tab",
+        "name": "Sensor Dashboard",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "flow1",
+        "type": "tab",
+        "label": "4-20mA Door Sensor",
+        "disabled": false,
+        "info": ""
+    }
+]
