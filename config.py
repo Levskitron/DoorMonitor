@@ -22,3 +22,7 @@ RESISTOR_OHMS  = 250    # Ω value used in the current-to-voltage conversion
 V_REF          = 3.3    # ADC reference voltage (3.3 or 5.0)
 MIN_CURRENT_MA = 4      # loop’s minimum current (mA)
 MAX_CURRENT_MA = 20     # loop’s maximum current (mA)
+
+# I²C (Sequent HAT) settings
+I2C_STACK_LEVEL = 0    # 0 = first HAT, 1 = second, etc.
+I2C_CHANNEL     = 1    # 1–4 for the 4–20 mA inputs on that HAT

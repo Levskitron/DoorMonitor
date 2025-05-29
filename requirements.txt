@@ -1,3 +1,4 @@
 # Only needed on Raspberry Pi (NOT INSTALLABLE ON WINDOWS)
 RPi.GPIO>=0.7.0
 spidev>=3.5
+git+https://github.com/SequentMicrosystems/megaind-rpi.git#egg=industrial
