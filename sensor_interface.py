@@ -60,7 +60,7 @@ def read_adc_sensor():
 def read_420_sensor():
     import spidev
     spi = spidev.SpiDev()
-    spi.open(0, 0)
+    spi.open(0, 0) # SPI bus [no], Chip-Select Line [no]
     spi.max_speed_hz = 1350000
 
     # read the configured channel
