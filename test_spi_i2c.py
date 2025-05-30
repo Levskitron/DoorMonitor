@@ -30,14 +30,18 @@ def test_i2c():
     for stack in (0,):
         for ch in (I2C_CHANNEL,):
             try:
-                # megaind.get4_20In returns µA
+                # Read loop current in microamps
                 raw_ua = megaind.get4_20In(stack, ch)
-                voltage = (raw_ua / 1000.0) * RESISTOR_OHMS / RESISTOR_OHMS  # optional check
+                # Convert and clamp
                 current_ma = raw_ua / 1000.0
                 current_ma = max(MIN_CURRENT_MA, min(current_ma, MAX_CURRENT_MA))
+                # Calculate percentage
                 percent = ((current_ma - MIN_CURRENT_MA) /
                            (MAX_CURRENT_MA - MIN_CURRENT_MA)) * 100
-                print(f"I2C → stack={stack}, CH{ch} → {raw_ua:6d} µA, {current_ma:5.2f} mA, {percent:5.1f}%")
+                # Format raw as integer µA
+                raw_int = int(raw_ua)
+                print(f"I2C → stack={stack}, CH{ch} → "
+                      f"{raw_int:6d} µA, {current_ma:5.2f} mA, {percent:5.1f}%")
             except Exception as e:
                 print(f"I2C → stack={stack}, CH{ch} → ERROR: {e}")
 
