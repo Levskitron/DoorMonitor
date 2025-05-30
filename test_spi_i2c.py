@@ -26,24 +26,20 @@ def test_spi():
                 print(f"SPI{bus}, CE{device} → ERROR: {e}")
 
 def test_i2c():
-    print("\n=== I²C Test ===")
-    for stack in (0,):
-        for ch in (I2C_CHANNEL,):
+    print("\n=== I²C Scan (all stack levels × channels 1–4) ===")
+    for stack in (0, 1):
+        for ch in range(1, 5):
             try:
-                # Read loop current in microamps
                 raw_ua = megaind.get4_20In(stack, ch)
-                # Convert and clamp
                 current_ma = raw_ua / 1000.0
                 current_ma = max(MIN_CURRENT_MA, min(current_ma, MAX_CURRENT_MA))
-                # Calculate percentage
                 percent = ((current_ma - MIN_CURRENT_MA) /
                            (MAX_CURRENT_MA - MIN_CURRENT_MA)) * 100
-                # Format raw as integer µA
                 raw_int = int(raw_ua)
-                print(f"I2C → stack={stack}, CH{ch} → "
+                print(f"I2C stack={stack}, CH{ch} → "
                       f"{raw_int:6d} µA, {current_ma:5.2f} mA, {percent:5.1f}%")
             except Exception as e:
-                print(f"I2C → stack={stack}, CH{ch} → ERROR: {e}")
+                print(f"I2C stack={stack}, CH{ch} → ERROR: {e}")
 
 if __name__ == "__main__":
     test_spi()
