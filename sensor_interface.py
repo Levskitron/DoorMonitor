@@ -84,25 +84,23 @@ def read_420_sensor():
     return int(percent)
 
 def read_i2c_sensor():
-    """
-    Read the 4–20 mA channel via the Sequent Industrial HAT's I2C library.
-    Returns door-% open (0–100).
-    """
-    import industrial
+    import megaind
     from config import I2C_STACK_LEVEL, I2C_CHANNEL
     from config import RESISTOR_OHMS, MIN_CURRENT_MA, MAX_CURRENT_MA
 
-    # library usually returns millivolts
-    raw_mv = industrial.getAnalogIn(I2C_STACK_LEVEL, I2C_CHANNEL)
-    voltage = raw_mv / 1000.0            # V
+    # read the loop current; megaind.get4_20In returns microamps
+    raw_ua = megaind.get4_20In(I2C_STACK_LEVEL, I2C_CHANNEL)
 
-    # convert V → mA across the load resistor
-    current_ma = (voltage / RESISTOR_OHMS) * 1000
+    # convert μA → mA
+    current_ma = raw_ua / 1000.0
+
+    # clamp to valid range
     current_ma = max(MIN_CURRENT_MA, min(current_ma, MAX_CURRENT_MA))
 
     # map 4–20 mA → 0–100%
     percent = ((current_ma - MIN_CURRENT_MA) /
                (MAX_CURRENT_MA - MIN_CURRENT_MA)) * 100
+
     return int(percent)
 
 # === Dispatcher: picks the right source ===
