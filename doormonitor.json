@@ -37,7 +37,8 @@
         "type": "function",
         "z": "1a2b3c4d-5e6f-7890-a1b2-c3d4e5f6a7b8",
         "name": "Scale mA to %",
-        "func": "// Input: 4-20mA (or ADC 0-32767 for ADS1115), Output: 0-100%\nlet raw = msg.payload;\nlet mA;\nif (typeof raw === 'number' && raw >= 4 && raw <= 20) {\n    mA = raw; // Inject node provides direct mA\n} else {\n    mA = (raw / 32767) * (20 - 4) + 4; // Scale ADS1115 0-32767 to 4-20mA\n}\nmA = Math.max(4, Math.min(20, mA)); // Clamp to 4-20mA\nlet percentage = ((mA - 4) / (20 - 4)) * 100;\npercentage = Math.max(0, Math.min(100, percentage)); // Clamp to 0-100\nmsg.payload = percentage;\nreturn msg;",
+        "func": "// Input: 4–20mA (or ADC 0–32767), Output: 0–100%\nlet raw = msg.payload;\nlet mA;\nif (typeof raw !== 'number') {\n    return null; // No downstream messages if payload isn’t a number\n}\nif (raw >= 4 && raw <= 20) {\n    mA = raw; // Direct 4–20mA input\n} else {\n    mA = (raw / 32767) * (20 - 4) + 4; // Scale ADC to 4–20mA\n}\nmA = Math.max(4, Math.min(20, mA)); // Clamp to 4–20mA\nlet percentage = ((mA - 4) / (20 - 4)) * 100;\npercentage = Math.max(0, Math.min(100, percentage)); // Clamp to 0–100\nmsg.payload = percentage;\nreturn msg;
+",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
