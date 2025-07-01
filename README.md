@@ -1,4 +1,5 @@
 # DoorMonitor
+**THIS PROJECT IS NO LONGER BEING DEVELOPED OR MAINTAINED!**
 
 A Python-based IoT program that determines whether a door is **OPEN** or **CLOSED**, and estimates the percentage it is open, based on sensor data and will send an email to a predefined user if a door has been open for longer than 5 minutes.
 
@@ -10,6 +11,7 @@ A Python-based IoT program that determines whether a door is **OPEN** or **CLOSE
 - Levi  
 - Aidan  
 - Imdad
+- Calvin
 
 ## Features
 
@@ -39,9 +41,14 @@ Run the file "doormonitor.py" in the IDE of your choice.
 To clone the repository to your machine, run the following commands in a command prompt:
 
 ```bash
-cd (file_path_where_you_want_clone_to_be)
-git clone https://github.com/Levskitron/DoorMonitor.py.git
+cd path/to/your/folder
+git clone https://github.com/Levskitron/DoorMonitor.git
 ```
 
 Or, open **Visual Studio Code**, go to the source control tab in the left menu, and press "Clone repository", if you are a collaborator, you can sign into GitHub through VS Code, and clone the repository to a specific folder.
 - If you are not a collaborator, you will need to fork this repository, and then follow the steps above.
+
+## BUGS AND ISSUES
+This program was abandoned during the development phase of this project. The program itself did not work during the testing phase, so we switched to Node-RED to achieve the assignment requirements. The issues with this program primarily lie in a lack of debugging ability to test whether the program can detect any 4-20mA input, and regardless, the program at the moment does not seem to convert any inputs (if it even receives any) into a percentage or anything significant.
+
+If you stumble across this repository and feel like working on the program on your own, feel free too! We won't be using it anymore, and it might be something interesting for someone else to figure out in the future.
